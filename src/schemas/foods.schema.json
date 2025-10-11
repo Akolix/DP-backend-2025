@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Food",
+  "type": "object",
+  "properties": {
+    "product_name": { "type": "string" },
+    "energy_kcal": { "type": "number" },
+    "protein": { "type": "number" },
+    "carbohydrates": { "type": "number" },
+    "sugars": { "type": "number" },
+    "fat": { "type": "number" },
+    "saturated_fat": { "type": "number" },
+    "salt": { "type": "number" }
+  },
+  "required": ["product_name", "energy_kcal", "protein"]
+}

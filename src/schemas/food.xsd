@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="food">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="product_name" type="xs:string"/>
+                <xs:element name="energy_kcal" type="xs:decimal"/>
+                <xs:element name="protein" type="xs:decimal"/>
+                <xs:element name="carbohydrates" type="xs:decimal" minOccurs="0"/>
+                <xs:element name="sugars" type="xs:decimal" minOccurs="0"/>
+                <xs:element name="fat" type="xs:decimal" minOccurs="0"/>
+                <xs:element name="saturated_fat" type="xs:decimal" minOccurs="0"/>
+                <xs:element name="salt" type="xs:decimal" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
