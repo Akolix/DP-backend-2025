@@ -1,7 +1,6 @@
 import express from "express";
 import axios from "axios";
 import dotenv from "dotenv";
-import { createClient } from "@supabase/supabase-js";
 import Ajv from "ajv";
 import { Builder, parseStringPromise } from "xml2js";
 import cors from "cors";
@@ -18,6 +17,9 @@ const port = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// In-memory store for local testing
+const localFoods = {};
+
 app.use(
     cors({
         origin: ["http://localhost:4200"],
@@ -25,9 +27,6 @@ app.use(
         allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
-
-// Supabase client
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 // Ajv JSON validator
 const ajv = new Ajv();
@@ -73,15 +72,8 @@ app.get("/foods/:barcode", async (req, res) => {
             return res.status(400).json({ error: "Invalid JSON", details: validateFood.errors });
         }
 
-        const { data: existing } = await supabase
-            .from("foods")
-            .select("id")
-            .eq("barcode", barcode)
-            .single();
-
-        if (!existing) {
-            await supabase.from("foods").insert([{ barcode, ...product }]);
-        }
+        // Store in local in-memory object
+        localFoods[barcode] = product;
 
         res.json({ barcode, ...product });
     } catch (err) {
@@ -95,13 +87,17 @@ app.get("/foods/:barcode/xml", async (req, res) => {
     try {
         const { barcode } = req.params;
 
-        const { data, error } = await supabase.from("foods").select("*").eq("barcode", barcode).single();
+        const { data, error } = await supabase
+            .from("foods")
+            .select("*")
+            .eq("barcode", barcode)
+            .single();
+
         if (error || !data) return res.status(404).send("Not found");
 
         const builder = new Builder({ rootName: "food", headless: true });
         const xml = builder.buildObject(data);
 
-        // Optional: parse it back to JS object to ensure it's valid XML
         await parseStringPromise(xml);
 
         res.type("application/xml").send(xml);
@@ -112,10 +108,12 @@ app.get("/foods/:barcode/xml", async (req, res) => {
 });
 
 // List all foods (JSON)
-app.get("/foods", async (req, res) => {
-    const { data, error } = await supabase.from("foods").select("*");
-    if (error) return res.status(500).json({ error: error.message });
-    res.json(data);
+app.get("/foods", (req, res) => {
+    const allFoods = Object.entries(localFoods).map(([barcode, data]) => ({
+        barcode,
+        ...data,
+    }));
+    res.json(allFoods);
 });
 
 app.listen(port, () => {

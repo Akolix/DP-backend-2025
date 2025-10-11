@@ -10,7 +10,8 @@
     "sugars": { "type": "number" },
     "fat": { "type": "number" },
     "saturated_fat": { "type": "number" },
-    "salt": { "type": "number" }
+    "salt": { "type": ["number", "null"]},
+    "fiber": { "type": ["number", "null"]}
   },
   "required": ["product_name", "energy_kcal", "protein"]
 }
