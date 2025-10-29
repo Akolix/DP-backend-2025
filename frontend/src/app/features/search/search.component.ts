@@ -103,7 +103,6 @@ export class FoodSearchComponent {
 
   viewFoodDetails(food: Food) {
     this.currentFood = food;
-    this.searchResults = [];
     this.searchQuery = food.product_name;
     this.showingBarcodeResult = false;
   }
