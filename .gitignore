@@ -26,4 +26,3 @@ Thumbs.db
 
 #Ignore lockfile if you prefer
 package-lock.json
-/frontend/src/environments/*
