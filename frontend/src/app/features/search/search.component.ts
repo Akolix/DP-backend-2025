@@ -110,6 +110,7 @@ export class FoodSearchComponent {
   clearSelection() {
     this.currentFood = null;
     this.showingBarcodeResult = false;
+    this.searchQuery = this.lastSearchQuery;
   }
 
   calculateCalories(): number {
