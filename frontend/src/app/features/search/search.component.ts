@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { FoodApiService } from '../../services/food-api.service';
 import { TrackerService } from '../../services/tracker.service';
 import { Food } from '../../models/food.model';
-import { debounceTime, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-food-search',
@@ -25,18 +24,10 @@ export class FoodSearchComponent {
   lastSearchQuery = '';
   showingBarcodeResult = false;
 
-  private searchSubject = new Subject<string>();
-
   constructor(
     private foodApi: FoodApiService,
     private tracker: TrackerService
   ) {
-    // Debounce search input for live suggestions
-    this.searchSubject.pipe(
-      debounceTime(1500)
-    ).subscribe(query => {
-      this.showLiveSuggestions(query);
-    });
   }
 
   handleSearch() {
@@ -102,41 +93,12 @@ export class FoodSearchComponent {
   }
 
   onSearchInput() {
-    // Clear previous results when typing
-    if (this.searchQuery.length < 3) {
+    // Just clear results when input is too short, no automatic searching
+    if (this.searchQuery.length < 2) {
       this.searchResults = [];
       this.currentFood = null;
       this.showingBarcodeResult = false;
-      return;
     }
-
-    this.loading = true;
-
-    // Only show live suggestions for text searches (not barcodes)
-    const isBarcode = /^\d+$/.test(this.searchQuery);
-    if (!isBarcode) {
-      this.searchSubject.next(this.searchQuery);
-    }
-  }
-
-  private showLiveSuggestions(query: string) {
-    this.foodApi.searchFoods(query).subscribe({
-      next: (results) => {
-        // Handle the response
-        if (results.results) {
-          this.searchResults = results.results.slice(0, 15); // Limit to 15 suggestions
-        } else if (results.source === 'local') {
-          this.searchResults = results.results || [];
-        } else {
-          this.searchResults = [...(results.local || []), ...(results.external || [])].slice(0, 15);
-        }
-        this.loading = false;
-      },
-      error: () => {
-        this.searchResults = [];
-        this.loading = false;
-      }
-    });
   }
 
   viewFoodDetails(food: Food) {
