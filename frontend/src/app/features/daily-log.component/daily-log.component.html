@@ -1,0 +1,223 @@
+<div class="daily-log-container">
+  <div class="header">
+    <h1>📅 Today's Food Log</h1>
+    <div class="date-display">{{currentDate | date:'fullDate'}}</div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div *ngIf="summary" class="summary-section">
+    <div class="summary-card">
+      <div class="summary-icon">🔥</div>
+      <div class="summary-content">
+        <span class="summary-label">Calories</span>
+        <span class="summary-value">{{summary.summary.totalCalories | number:'1.0-0'}}</span>
+        <span class="summary-goal">/ {{summary.goals.daily_goal}}</span>
+      </div>
+      <div class="summary-progress">
+        <div class="progress-circle" [style.background]="getProgressColor(summary.progress.calories)">
+          {{summary.progress.calories}}%
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">🥩</div>
+      <div class="summary-content">
+        <span class="summary-label">Protein</span>
+        <span class="summary-value">{{summary.summary.totalProtein | number:'1.0-1'}}g</span>
+        <span class="summary-goal">/ {{summary.goals.protein_goal}}g</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">🍞</div>
+      <div class="summary-content">
+        <span class="summary-label">Carbs</span>
+        <span class="summary-value">{{summary.summary.totalCarbs | number:'1.0-1'}}g</span>
+        <span class="summary-goal">/ {{summary.goals.carbs_goal}}g</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">🥑</div>
+      <div class="summary-content">
+        <span class="summary-label">Fat</span>
+        <span class="summary-value">{{summary.summary.totalFat | number:'1.0-1'}}g</span>
+        <span class="summary-goal">/ {{summary.goals.fat_goal}}g</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Meals Breakdown -->
+  <div class="meals-section">
+    <!-- Breakfast -->
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-title">
+          <span class="meal-icon">🍳</span>
+          <h2>Breakfast</h2>
+        </div>
+        <div class="meal-totals" *ngIf="getMealTotals('breakfast') as totals">
+          <span class="meal-total">{{totals.calories}} kcal</span>
+          <span class="meal-total-separator">•</span>
+          <span class="meal-total">{{totals.protein}}g protein</span>
+        </div>
+      </div>
+      <div class="meal-items">
+        <div *ngIf="getMealItems('breakfast').length === 0" class="empty-meal">
+          No items logged for breakfast
+        </div>
+        <div *ngFor="let item of getMealItems('breakfast')" class="food-item">
+          <div class="food-item-content">
+            <h3>{{item.product_name}}</h3>
+            <div class="food-item-details">
+              <span class="detail">{{item.serving_size}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">{{item.energy_kcal | number:'1.0-0'}} kcal</span>
+              <span class="separator">•</span>
+              <span class="detail">P: {{item.protein | number:'1.0-1'}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">C: {{item.carbohydrates | number:'1.0-1'}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">F: {{item.fat | number:'1.0-1'}}g</span>
+            </div>
+            <div class="food-item-time">{{item.logged_at | date:'shortTime'}}</div>
+          </div>
+          <button class="btn-delete" (click)="deleteItem(item)" title="Remove item">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lunch -->
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-title">
+          <span class="meal-icon">🍽️</span>
+          <h2>Lunch</h2>
+        </div>
+        <div class="meal-totals" *ngIf="getMealTotals('lunch') as totals">
+          <span class="meal-total">{{totals.calories}} kcal</span>
+          <span class="meal-total-separator">•</span>
+          <span class="meal-total">{{totals.protein}}g protein</span>
+        </div>
+      </div>
+      <div class="meal-items">
+        <div *ngIf="getMealItems('lunch').length === 0" class="empty-meal">
+          No items logged for lunch
+        </div>
+        <div *ngFor="let item of getMealItems('lunch')" class="food-item">
+          <div class="food-item-content">
+            <h3>{{item.product_name}}</h3>
+            <div class="food-item-details">
+              <span class="detail">{{item.serving_size}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">{{item.energy_kcal | number:'1.0-0'}} kcal</span>
+              <span class="separator">•</span>
+              <span class="detail">P: {{item.protein | number:'1.0-1'}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">C: {{item.carbohydrates | number:'1.0-1'}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">F: {{item.fat | number:'1.0-1'}}g</span>
+            </div>
+            <div class="food-item-time">{{item.logged_at | date:'shortTime'}}</div>
+          </div>
+          <button class="btn-delete" (click)="deleteItem(item)" title="Remove item">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dinner -->
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-title">
+          <span class="meal-icon">🍴</span>
+          <h2>Dinner</h2>
+        </div>
+        <div class="meal-totals" *ngIf="getMealTotals('dinner') as totals">
+          <span class="meal-total">{{totals.calories}} kcal</span>
+          <span class="meal-total-separator">•</span>
+          <span class="meal-total">{{totals.protein}}g protein</span>
+        </div>
+      </div>
+      <div class="meal-items">
+        <div *ngIf="getMealItems('dinner').length === 0" class="empty-meal">
+          No items logged for dinner
+        </div>
+        <div *ngFor="let item of getMealItems('dinner')" class="food-item">
+          <div class="food-item-content">
+            <h3>{{item.product_name}}</h3>
+            <div class="food-item-details">
+              <span class="detail">{{item.serving_size}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">{{item.energy_kcal | number:'1.0-0'}} kcal</span>
+              <span class="separator">•</span>
+              <span class="detail">P: {{item.protein | number:'1.0-1'}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">C: {{item.carbohydrates | number:'1.0-1'}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">F: {{item.fat | number:'1.0-1'}}g</span>
+            </div>
+            <div class="food-item-time">{{item.logged_at | date:'shortTime'}}</div>
+          </div>
+          <button class="btn-delete" (click)="deleteItem(item)" title="Remove item">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Snacks -->
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-title">
+          <span class="meal-icon">🍪</span>
+          <h2>Snacks</h2>
+        </div>
+        <div class="meal-totals" *ngIf="getMealTotals('snack') as totals">
+          <span class="meal-total">{{totals.calories}} kcal</span>
+          <span class="meal-total-separator">•</span>
+          <span class="meal-total">{{totals.protein}}g protein</span>
+        </div>
+      </div>
+      <div class="meal-items">
+        <div *ngIf="getMealItems('snack').length === 0" class="empty-meal">
+          No snacks logged
+        </div>
+        <div *ngFor="let item of getMealItems('snack')" class="food-item">
+          <div class="food-item-content">
+            <h3>{{item.product_name}}</h3>
+            <div class="food-item-details">
+              <span class="detail">{{item.serving_size}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">{{item.energy_kcal | number:'1.0-0'}} kcal</span>
+              <span class="separator">•</span>
+              <span class="detail">P: {{item.protein | number:'1.0-1'}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">C: {{item.carbohydrates | number:'1.0-1'}}g</span>
+              <span class="separator">•</span>
+              <span class="detail">F: {{item.fat | number:'1.0-1'}}g</span>
+            </div>
+            <div class="food-item-time">{{item.logged_at | date:'shortTime'}}</div>
+          </div>
+          <button class="btn-delete" (click)="deleteItem(item)" title="Remove item">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <a routerLink="/search" class="btn btn-primary">
+      ➕ Add Food
+    </a>
+    <a routerLink="/dashboard" class="btn btn-secondary">
+      📊 Back to Dashboard
+    </a>
+  </div>
+</div>
