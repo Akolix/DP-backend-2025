@@ -27,6 +27,19 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+//Check
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Data Processing API - 2025',
+        status: 'online',
+        endpoints: {
+            health: '/health',
+            foods: '/api/foods',
+            tracker: '/api/tracker'
+        }
+    });
+});
+
 // Routes
 app.use('/api/foods', foodRoutes);
 app.use('/api/tracker', trackerRoutes);
