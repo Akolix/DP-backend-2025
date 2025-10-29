@@ -7,7 +7,7 @@ export async function fetchProductByBarcode(barcode) {
     const url = `${OPENFOODFACTS_API}/api/v0/product/${barcode}.json`;
 
     try {
-        const { data } = await axios.get(url, { timeout: 10000 });
+        const { data } = await axios.get(url, { timeout: 30000 });
 
         if (!data || data.status === 0) {
             return null;
@@ -20,9 +20,8 @@ export async function fetchProductByBarcode(barcode) {
     }
 }
 
-export async function searchProducts(query, page = 1, pageSize = 20) {
+export async function searchProducts(query, page = 1, pageSize = 10) {
     try {
-        // Use the cgi search endpoint which is faster
         const url = `${OPENFOODFACTS_API}/cgi/search.pl`;
 
         const { data } = await axios.get(url, {
@@ -34,7 +33,7 @@ export async function searchProducts(query, page = 1, pageSize = 20) {
                 page_size: pageSize,
                 json: 1
             },
-            timeout: 10000
+            timeout: 30000
         });
 
         if (!data || !data.products || data.products.length === 0) {
