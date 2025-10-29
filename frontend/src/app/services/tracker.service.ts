@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
-import {environment} from '../../environments/environment';
+import {environmentProd} from '../../environments/environment.prod';
 import { FoodLog, DailySummary, CalorieGoals } from '../models/food.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TrackerService {
-  private apiUrl = `${environment.apiUrl}/tracker`;
+  private apiUrl = `${environmentProd.apiUrl}/tracker`;
   private summarySubject = new BehaviorSubject<DailySummary | null>(null);
   public summary$ = this.summarySubject.asObservable();
 
