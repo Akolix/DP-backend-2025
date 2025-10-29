@@ -14,7 +14,16 @@ export class TrackerService {
 
   constructor(private http: HttpClient) {}
 
-  logFood(foodData: Partial<FoodLog>): Observable<FoodLog> {
+  logFood(foodData: {
+    barcode: string;
+    product_name: string;
+    serving_size: number;
+    energy_kcal: number;
+    protein: number;
+    carbohydrates: number;
+    fat: number;
+    meal_type: string
+  }): Observable<FoodLog> {
     return this.http.post<FoodLog>(`${this.apiUrl}/log`, foodData).pipe(
       tap(() => this.refreshSummary())
     );

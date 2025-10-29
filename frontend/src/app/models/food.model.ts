@@ -10,6 +10,7 @@ export interface Food {
   saturated_fat?: number;
   salt?: number;
   fiber?: number;
+  image_url?: string;
   created_at?: string;
 }
 

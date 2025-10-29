@@ -1,10 +1,10 @@
 {
   "name": "dp-backend-2025",
   "version": "1.0.0",
-  "main": "src/server.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",

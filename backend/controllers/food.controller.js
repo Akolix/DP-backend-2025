@@ -55,22 +55,24 @@ export async function searchFoods(req, res, next) {
             return res.status(400).json({ error: 'Query must be at least 2 characters' });
         }
 
-        // First search local database
+        // ALWAYS search OpenFoodFacts for live results
+        const externalResults = await openFoodFactsService.searchProducts(q, 1, 50);
+
+        // Also search local database for previously cached items
         const localResults = await foodService.searchFoodsByName(q);
 
-        // If not enough results, search OpenFoodFacts
-        if (localResults.length < 5) {
-            const externalResults = await openFoodFactsService.searchProducts(q);
-            return res.json({
-                source: 'mixed',
-                local: localResults,
-                external: externalResults.slice(0, 10)
-            });
-        }
+        // Combine results, prioritizing local (already validated) items
+        const combinedResults = [
+            ...localResults,
+            ...externalResults.filter(ext =>
+                !localResults.some(local => local.barcode === ext.barcode)
+            )
+        ];
 
         res.json({
-            source: 'local',
-            results: localResults
+            source: 'live',
+            total: combinedResults.length,
+            results: combinedResults.slice(0, 30) // Return up to 30 results
         });
     } catch (error) {
         next(error);

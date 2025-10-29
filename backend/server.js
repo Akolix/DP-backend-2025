@@ -1,12 +1,19 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import foodRoutes from './routes/food.routes.js';
 import trackerRoutes from './routes/tracker.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { corsOptions } from './config/cors.js';
 
-dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from backend/ directory (one level up from src/)
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const port = process.env.PORT || 3000;
