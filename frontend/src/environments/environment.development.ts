@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:3000/api'
+  production: true,
+  apiUrl: 'https://dp-backend-2025-rjhb.onrender.com/api/'
 };
