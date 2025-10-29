@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {environmentProd} from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
 import { Food } from '../models/food.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FoodApiService {
-  private apiUrl = `${environmentProd.apiUrl}/foods`;
+  private apiUrl = `${environment.apiUrl}/foods`;
 
   constructor(private http: HttpClient) {}
 
