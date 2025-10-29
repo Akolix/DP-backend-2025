@@ -7,7 +7,7 @@ export async function fetchProductByBarcode(barcode) {
     const url = `${OPENFOODFACTS_API}/api/v0/product/${barcode}.json`;
 
     try {
-        const { data } = await axios.get(url, { timeout: 10000 });
+        const { data } = await axios.get(url, { timeout: 30000 });
 
         if (!data || data.status === 0) {
             return null;
@@ -33,7 +33,7 @@ export async function searchProducts(query, page = 1, pageSize = 10) {
                 page_size: pageSize,
                 json: 1
             },
-            timeout: 10000
+            timeout: 30000
         });
 
         if (!data || !data.products || data.products.length === 0) {

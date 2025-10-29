@@ -103,14 +103,16 @@ export class FoodSearchComponent {
 
   viewFoodDetails(food: Food) {
     this.currentFood = food;
+    this.searchResults = [];
     this.searchQuery = food.product_name;
     this.showingBarcodeResult = false;
   }
 
   clearSelection() {
     this.currentFood = null;
+    this.searchQuery = '';
+    this.searchResults = [];
     this.showingBarcodeResult = false;
-    this.searchQuery = this.lastSearchQuery;
   }
 
   calculateCalories(): number {
