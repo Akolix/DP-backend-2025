@@ -29,29 +29,6 @@ CORS: Enabled for localhost:4200 and Render frontend URLs
 
 ---
 
-## Project Structure
-
-```
-API-backend-DP2025/
-├── package.json
-├── .env
-├── server.js
-├── routes/
-│   └── foodRoutes.js
-├── controllers/
-│   └── foodController.js
-├── utils/
-│   ├── jsonSchema.js
-│   ├── xmlSchema.xsd
-│   ├── validation.js
-│   └── supabaseClient.js
-├── docs/
-│   └── swagger.js
-└── README.md
-```
-
----
-
 ## Setup & Installation
 
 ### 1. Clone the repo
@@ -170,3 +147,4 @@ Software Engineering Program
 ## License
 
 MIT License © 2025
+
