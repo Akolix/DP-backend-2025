@@ -12,7 +12,7 @@ import { corsOptions } from './config/cors.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load .env from backend/ directory (one level up from src/)
+// Load .env from backend/ directory
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
@@ -27,24 +27,20 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-//Check
-app.get('/', (req, res) => {
-    res.json({
-        message: 'Data Processing API - 2025',
-        status: 'online',
-        endpoints: {
-            health: '/health',
-            foods: '/api/foods',
-            tracker: '/api/tracker'
-        }
-    });
-});
-
-// Routes
+// API Routes (must be before static files)
 app.use('/api/foods', foodRoutes);
 app.use('/api/tracker', trackerRoutes);
 
-// Error handling middleware (must be last)
+// Serve Angular static files
+const frontendDistPath = path.join(__dirname, '../frontend/dist/frontend/browser');
+app.use(express.static(frontendDistPath));
+
+// Catch-all route: send index.html for any non-API routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+});
+
+// Error handling middleware
 app.use(errorHandler);
 
 app.listen(port, () => {
