@@ -733,11 +733,11 @@ export class FoodSearchComponent {
       next: (results) => {
         // Handle the response
         if (results.results) {
-          this.searchResults = results.results.slice(0, 15); // Limit to 15 suggestions
+          this.searchResults = results.results.slice(0, 5); // Limit to 15 suggestions
         } else if (results.source === 'local') {
           this.searchResults = results.results || [];
         } else {
-          this.searchResults = [...(results.local || []), ...(results.external || [])].slice(0, 15);
+          this.searchResults = [...(results.local || []), ...(results.external || [])].slice(0, 5);
         }
         this.loading = false;
       },
