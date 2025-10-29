@@ -27,12 +27,12 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// API Routes (must be before static files)
+// API Routes (must be before static files and catch-all)
 app.use('/api/foods', foodRoutes);
 app.use('/api/tracker', trackerRoutes);
 
 // Serve Angular static files
-const frontendDistPath = path.join(__dirname, '../frontend/dist/frontend/browser');
+const frontendDistPath = path.join(__dirname, '../frontend/dist/frontend');
 app.use(express.static(frontendDistPath));
 
 // Catch-all route: send index.html for any non-API routes
@@ -46,4 +46,5 @@ app.use(errorHandler);
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Serving frontend from: ${frontendDistPath}`);
 });
