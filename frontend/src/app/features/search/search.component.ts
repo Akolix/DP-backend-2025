@@ -109,8 +109,6 @@ export class FoodSearchComponent {
 
   clearSelection() {
     this.currentFood = null;
-    this.searchQuery = '';
-    this.searchResults = [];
     this.showingBarcodeResult = false;
   }
 
