@@ -33,7 +33,7 @@ export class FoodSearchComponent {
   ) {
     // Debounce search input for live suggestions
     this.searchSubject.pipe(
-      debounceTime(600)
+      debounceTime(1500)
     ).subscribe(query => {
       this.showLiveSuggestions(query);
     });
