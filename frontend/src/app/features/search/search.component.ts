@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { FoodApiService } from '../../services/food-api.service';
 import { TrackerService } from '../../services/tracker.service';
 import { Food } from '../../models/food.model';
+import {debounceTime, distinctUntilChanged, Subject} from 'rxjs';
 
 @Component({
   selector: 'app-food-search',
@@ -23,11 +24,30 @@ export class FoodSearchComponent {
   searchAttempted = false;
   lastSearchQuery = '';
   showingBarcodeResult = false;
+  searchSubject = new Subject<string>();
+  destroy$ = new Subject<void>();
 
   constructor(
     private foodApi: FoodApiService,
     private tracker: TrackerService
   ) {
+  }
+
+  ngOnInit() {
+    // Setup debounced search
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(), 
+    ).subscribe(query => {
+      if (query.length >= 2) {
+        this.performSearch(query);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   handleSearch() {
@@ -40,6 +60,17 @@ export class FoodSearchComponent {
     const isBarcode = /^\d+$/.test(this.searchQuery);
 
     if (isBarcode && this.searchQuery.length >= 8) {
+      this.searchByBarcode();
+    } else {
+      this.searchByName();
+    }
+  }
+
+  private performSearch(query: string) {
+    // Check if it looks like a barcode
+    const isBarcode = /^\d+$/.test(query);
+
+    if (isBarcode && query.length >= 8) {
       this.searchByBarcode();
     } else {
       this.searchByName();
@@ -90,15 +121,6 @@ export class FoodSearchComponent {
         this.loading = false;
       }
     });
-  }
-
-  onSearchInput() {
-    // Just clear results when input is too short, no automatic searching
-    if (this.searchQuery.length < 2) {
-      this.searchResults = [];
-      this.currentFood = null;
-      this.showingBarcodeResult = false;
-    }
   }
 
   viewFoodDetails(food: Food) {

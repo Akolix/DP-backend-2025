@@ -15,7 +15,21 @@
     </button>
   </div>
 
-  <div *ngIf="loading" class="loading">⏳ Searching...</div>
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Searching for products...</p>
+
+    <!-- Skeleton Cards -->
+    <div style="max-width: 600px; margin: 2rem auto;">
+      <div class="skeleton-card" *ngFor="let item of [1,2,3]">
+        <div class="skeleton-image skeleton"></div>
+        <div class="skeleton-text">
+          <div class="skeleton-line skeleton"></div>
+          <div class="skeleton-line skeleton short"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div *ngIf="error" class="error">{{error}}</div>
 
   <!-- Live Search Suggestions with Images -->
