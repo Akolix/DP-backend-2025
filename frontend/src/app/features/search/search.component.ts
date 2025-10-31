@@ -37,7 +37,7 @@ export class FoodSearchComponent {
     // Setup debounced search
     this.searchSubject.pipe(
       debounceTime(500),
-      distinctUntilChanged(), 
+      distinctUntilChanged(),
     ).subscribe(query => {
       if (query.length >= 2) {
         this.performSearch(query);
@@ -48,6 +48,18 @@ export class FoodSearchComponent {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onSearchInput() {
+    if (this.searchQuery.length < 2) {
+      this.searchResults = [];
+      this.currentFood = null;
+      this.showingBarcodeResult = false;
+      return;
+    }
+
+    // Emit to debounced search subject
+    this.searchSubject.next(this.searchQuery);
   }
 
   handleSearch() {
