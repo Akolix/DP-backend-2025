@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FoodApiService } from '../../services/food-api.service';
 import { TrackerService } from '../../services/tracker.service';
 import { Food } from '../../models/food.model';
-import {debounceTime, distinctUntilChanged, Subject} from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-food-search',
@@ -13,7 +13,7 @@ import {debounceTime, distinctUntilChanged, Subject} from 'rxjs';
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-export class FoodSearchComponent {
+export class FoodSearchComponent implements OnInit, OnDestroy {
   searchQuery = '';
   currentFood: Food | null = null;
   searchResults: Food[] = [];
@@ -24,23 +24,25 @@ export class FoodSearchComponent {
   searchAttempted = false;
   lastSearchQuery = '';
   showingBarcodeResult = false;
-  searchSubject = new Subject<string>();
-  destroy$ = new Subject<void>();
+
+  private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
+  private lastSearchTime = 0;
+  private searchCooldown = 500;
 
   constructor(
     private foodApi: FoodApiService,
     private tracker: TrackerService
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
-    // Setup debounced search
+    // Setup debounced search for auto-complete
     this.searchSubject.pipe(
       debounceTime(500),
       distinctUntilChanged(),
     ).subscribe(query => {
       if (query.length >= 2) {
-        this.performSearch(query);
+        this.performSearch(query, 'debounce');
       }
     });
   }
@@ -58,7 +60,7 @@ export class FoodSearchComponent {
       return;
     }
 
-    // Emit to debounced search subject
+    // Only emit to debounced search - don't search immediately
     this.searchSubject.next(this.searchQuery);
   }
 
@@ -68,17 +70,21 @@ export class FoodSearchComponent {
     this.searchAttempted = true;
     this.lastSearchQuery = this.searchQuery;
 
-    // Check if it looks like a barcode
-    const isBarcode = /^\d+$/.test(this.searchQuery);
-
-    if (isBarcode && this.searchQuery.length >= 8) {
-      this.searchByBarcode();
-    } else {
-      this.searchByName();
-    }
+    // Perform immediate search (cancels debounced search)
+    this.performSearch(this.searchQuery, 'manual');
   }
 
-  private performSearch(query: string) {
+  private performSearch(query: string, source: 'manual' | 'debounce') {
+    const now = Date.now();
+
+    // Prevent duplicate searches within cooldown period
+    if (now - this.lastSearchTime < this.searchCooldown) {
+      console.log('Search cooldown active, skipping duplicate search');
+      return;
+    }
+
+    this.lastSearchTime = now;
+
     // Check if it looks like a barcode
     const isBarcode = /^\d+$/.test(query);
 
@@ -155,7 +161,6 @@ export class FoodSearchComponent {
   }
 
   onImageError(event: any) {
-    // Hide broken images
     event.target.style.display = 'none';
   }
 
