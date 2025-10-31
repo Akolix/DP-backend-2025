@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FoodApiService } from '../../services/food-api.service';
 import { TrackerService } from '../../services/tracker.service';
 import { Food } from '../../models/food.model';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-food-search',
@@ -13,7 +12,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-export class FoodSearchComponent implements OnInit, OnDestroy {
+export class FoodSearchComponent {
   searchQuery = '';
   currentFood: Food | null = null;
   searchResults: Food[] = [];
@@ -25,43 +24,18 @@ export class FoodSearchComponent implements OnInit, OnDestroy {
   lastSearchQuery = '';
   showingBarcodeResult = false;
 
-  private searchSubject = new Subject<string>();
-  private destroy$ = new Subject<void>();
-  private lastSearchTime = 0;
-  private searchCooldown = 500;
-
   constructor(
     private foodApi: FoodApiService,
     private tracker: TrackerService
   ) {}
 
-  ngOnInit() {
-    // Setup debounced search for auto-complete
-    this.searchSubject.pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
-    ).subscribe(query => {
-      if (query.length >= 2) {
-        this.performSearch(query, 'debounce');
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   onSearchInput() {
+    // Clear results when input is too short
     if (this.searchQuery.length < 2) {
       this.searchResults = [];
       this.currentFood = null;
       this.showingBarcodeResult = false;
-      return;
     }
-
-    // Only emit to debounced search - don't search immediately
-    this.searchSubject.next(this.searchQuery);
   }
 
   handleSearch() {
@@ -70,25 +44,10 @@ export class FoodSearchComponent implements OnInit, OnDestroy {
     this.searchAttempted = true;
     this.lastSearchQuery = this.searchQuery;
 
-    // Perform immediate search (cancels debounced search)
-    this.performSearch(this.searchQuery, 'manual');
-  }
-
-  private performSearch(query: string, source: 'manual' | 'debounce') {
-    const now = Date.now();
-
-    // Prevent duplicate searches within cooldown period
-    if (now - this.lastSearchTime < this.searchCooldown) {
-      console.log('Search cooldown active, skipping duplicate search');
-      return;
-    }
-
-    this.lastSearchTime = now;
-
     // Check if it looks like a barcode
-    const isBarcode = /^\d+$/.test(query);
+    const isBarcode = /^\d+$/.test(this.searchQuery);
 
-    if (isBarcode && query.length >= 8) {
+    if (isBarcode && this.searchQuery.length >= 8) {
       this.searchByBarcode();
     } else {
       this.searchByName();
