@@ -56,7 +56,7 @@ export async function searchFoods(req, res, next) {
         }
 
         // ALWAYS search OpenFoodFacts for live results
-        const externalResults = await openFoodFactsService.searchProducts(q, 1, 15);
+        const externalResults = await openFoodFactsService.searchProducts(q, 1, 30);
 
         // Also search local database for previously cached items
         const localResults = await foodService.searchFoodsByName(q);
@@ -72,7 +72,7 @@ export async function searchFoods(req, res, next) {
         res.json({
             source: 'live',
             total: combinedResults.length,
-            results: combinedResults.slice(0, 15) // Return up to 30 results
+            results: combinedResults.slice(0, 30) // Return up to 30 results
         });
     } catch (error) {
         next(error);
