@@ -29,15 +29,6 @@ export class FoodSearchComponent {
     private tracker: TrackerService
   ) {}
 
-  onSearchInput() {
-    // Clear results when input is too short
-    if (this.searchQuery.length < 2) {
-      this.searchResults = [];
-      this.currentFood = null;
-      this.showingBarcodeResult = false;
-    }
-  }
-
   handleSearch() {
     if (!this.searchQuery.trim()) return;
 
