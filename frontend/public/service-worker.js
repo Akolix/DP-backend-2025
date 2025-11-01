@@ -1,4 +1,3 @@
-// public/service-worker.js
 const CACHE_NAME = 'food-tracker-v1';
 const urlsToCache = [
   '/',
