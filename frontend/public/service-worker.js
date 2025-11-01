@@ -24,8 +24,8 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(event.request)
         .then(response => {
-          // Clone and cache successful responses
-          if (response.ok) {
+          // Only cache successful response
+          if (response.status >= 200 && response.status < 300) {
             const responseClone = response.clone();
             caches.open(CACHE_NAME).then(cache => {
               cache.put(event.request, responseClone);
@@ -34,7 +34,7 @@ self.addEventListener('fetch', event => {
           return response;
         })
         .catch(() => {
-          // Network failed, try cache
+          // Network failed, use cache fallback
           return caches.match(event.request);
         })
     );
